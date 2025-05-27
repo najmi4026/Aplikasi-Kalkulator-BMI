@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator BMI (Body Mass Index)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset Sederhana & Global Styles */
+        body, h1, h2, h3, p, ul, li, form, label, input, button, table, th, td, textarea {
+            margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;
+        }
+        body {
+            line-height: 1.6; color: #333; padding: 20px;
+            background-image: url('wallpaper.jpg'); /* Menggunakan wallpaper.jpg seperti dalam loginSignup.html anda */
+            background-repeat: no-repeat; background-size: cover;
+            background-position: center center; background-attachment: fixed;
+            background-color: #e0e0e0; min-height: 100vh;
+        }
+        .container {
+            width: 90%; max-width: 1200px; margin: 20px auto; padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 8px;
+        }
+        .hidden { display: none !important; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .text-center { text-align: center; }
+        .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; position: relative; border-bottom: none; }
+        .header-row::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background-color: rgba(0, 0, 0, 0.15); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 1px; }
+        .header-text { flex-grow: 1; }
+        .bmiHead { font-size: 2em; color: #2c3e50; }
+        .bmiText { font-size: 1.2em; color: #7f8c8d; }
+        #userNameDisplay { margin-right: 15px; font-size: 0.9em; color: #555; }
+        #logoutButton { padding: 8px 15px; background-color: #d9534f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s; }
+        #logoutButton:hover { background-color: #c9302c; }
+        .main-body { display: flex; flex-wrap: wrap; gap: 20px; }
+        .form-main, .right-sec { flex: 1; min-width: 300px; padding: 20px; border: 1px solid rgba(221, 221, 221, 0.7); border-radius: 8px; }
+        .form-main { background-color: rgba(255, 255, 255, 0.95); }
+        .right-sec { background-color: rgba(249, 249, 249, 0.95); }
+        .form-group { margin-bottom: 15px; }
+        .input-title, .form-group legend { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        .textbox-group input[type="tel"], .textbox-group input[type="number"] { width: calc(100% - 90px); padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-right: 5px; }
+        .textbox-group .textbox_ht { width: calc(50% - 45px); }
+        .textbox-group .years, .textbox-group .yrs-cond { font-size: 0.9em; color: #555; }
+        .yrs-cond { display: block; font-size: 0.8em; color: #777; }
+        .radio-group input[type="radio"] { margin-right: 5px; }
+        .radio-group label { margin-right: 15px; cursor: pointer; }
+        .a-switch, .js-btnCal { padding: 10px 15px; background-color: #3498db; color: white; text-decoration: none; border: none; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 5px; transition: background-color 0.3s; }
+        .a-switch { font-size: 0.8em; padding: 8px 10px; }
+        .a-switch:hover, .js-btnCal:hover { background-color: #2980b9; }
+        .js-btnCal:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        .error { display: block; color: red; font-size: 0.85em; margin-top: 3px; }
+        .result-bmi { font-size: 1.1em; margin-bottom: 5px; }
+        .result-val .back-clr-no { font-size: 2.5em; font-weight: bold; color: #e74c3c; }
+        .band-sec { margin-top: 15px; }
+        .color-band { display: flex; height: 20px; border-radius: 8px; overflow: hidden; position: relative; }
+        .color-band .yellow { flex: 1; background-color: #f1c40f; }
+        .color-band .green { flex: 2; background-color: #2ecc71; }
+        .color-band .orange { flex: 1; background-color: #e67e22; }
+        .color-band .red { flex: 1; background-color: #e74c3c; }
+        .marker { width: 4px; height: 24px; background-color: #2c3e50; position: absolute; top: -2px; left: 0%; transition: left 0.5s ease; border-radius: 2px; }
+        .text-band { display: flex; font-size: 0.8em; margin-top: 3px; }
+        .text-band > div { flex: 1; text-align: center; }
+        .text-band > div:nth-child(2) { flex: 2; }
+        .resultInfo-sec { padding: 10px; margin-top: 10px; background-color: rgba(234, 250, 241, 0.95); border: 1px solid rgba(209, 242, 235, 0.7); border-radius: 8px; }
+        .resultInfo-head { font-size: 1.2em; font-weight: bold; color: #16a085; }
+        .bmi-range { margin-top: 15px; font-style: italic; }
+        .notes-section { padding: 20px; margin-top: 30px; margin-bottom: 20px; }
+        .notes-section .notes-title { font-size: 1.8em; color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; position: relative; border-bottom: none; }
+        .notes-section .notes-title::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background-color: rgba(0, 0, 0, 0.15); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 1px; }
+        .notes-section textarea#personalNotes { width: 100%; border: 1px solid #d1d1d1; border-radius: 4px; padding: 10px; font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; font-size: 1em; line-height: 1.8em; min-height: calc(1.8em * 5 + 20px); color: #2c3e50; background-color: #fff; background-image: linear-gradient(to bottom, transparent calc(1.8em - 1px), #a2d2ff calc(1.8em - 1px), #a2d2ff 1.8em); background-size: 100% 1.8em; background-attachment: local; background-position: 0 10px; resize: vertical; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); margin-top: 15px; }
+        .notes-section textarea#personalNotes.ruled-textarea { background-image: linear-gradient(to right, #f0f0f0 1px, transparent 1px), linear-gradient(to bottom, transparent calc(1.8em - 1px), #a2d2ff calc(1.8em - 1px), #a2d2ff 1.8em); background-size: 40px 100%, 100% 1.8em; background-position: 30px 0, 0 10px; background-repeat: no-repeat, repeat-y; padding-left: 40px; }
+        .save-note-button-container { margin-top: 15px; text-align: right; }
+        #saveNoteButton { padding: 10px 20px; background-color: #5cb85c; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1em; transition: background-color 0.3s; }
+        #saveNoteButton:hover { background-color: #4cae4c; }
+    </style>
+</head>
+<body>
+
+<div class="bmi-cal">
+    <div class="container section-main">
+        <div class="header-row">
+            <div class="header-text">
+                <h1 class="bmiHead">Kalkulator BMI</h1>
+                <h2 class="bmiText">Body Mass Index</h2>
+            </div>
+            <div>
+                <span id="userNameDisplay"></span>
+                <button id="logoutButton" style="display: none;">Logout</button>
+            </div>
+        </div>
+        <div class="main-body" id="main-body">
+            <form class="form-main" id="bmiForm">
+                <div class="form-group"> <fieldset> <legend class="input-title">Jantina</legend> <div class="radio-group js-gender"> <input type="radio" name="gender" id="genderM" value="Male" checked> <label for="genderM" class="radio-label">Lelaki</label> <input type="radio" name="gender" id="genderF" value="Female"> <label for="genderF" class="radio-label">Perempuan</label> </div> </fieldset> </div>
+                <div class="form-group"> <label class="input-title" for="age">Umur</label> <div class="textbox-group"> <input type="number" id="age" name="age" class="textbox js-age" min="2" max="120" aria-describedby="ageError ageCondition" placeholder="Contoh: 25"> <span class="years">tahun</span> <span id="ageCondition" class="yrs-cond">Antara 2 hingga 120 tahun</span> </div> <span id="ageError" class="error hidden">Sila masukkan umur yang sah.</span> </div>
+                <div class="form-group"> <label class="input-title" id="heightLabel">Tinggi</label> <div class="textbox-group" role="group" aria-labelledby="heightLabel"> <div class="js-height-ft-in"> <label for="height_ft" class="visually-hidden">Tinggi dalam Kaki</label> <input type="number" id="height_ft" name="height_ft" class="textbox_ht js-height_ft" placeholder="Kaki" min="1" max="8" aria-describedby="heightError"> <label for="height_in" class="visually-hidden">Tinggi dalam Inci</label> <input type="number" id="height_in" name="height_in" class="textbox_ht js-height_in" placeholder="Inci" min="0" max="11" aria-describedby="heightError"> <button type="button" class="a-switch js-height-switch">Tukar ke cm</button> </div> <div class="js-height-cm hidden"> <label for="height_cm" class="visually-hidden">Tinggi dalam CM</label> <input type="number" id="height_cm" name="height_cm" class="textbox_ht js-height_cm" placeholder="CM" min="50" max="250" aria-describedby="heightError"> <button type="button" class="a-switch js-height-switch">Tukar ke kaki & inci</button> </div> <span id="heightError" class="error hidden">Sila masukkan tinggi yang sah.</span> </div> </div>
+                <div class="form-group"> <label class="input-title" for="weight">Berat</label> <div class="textbox-group"> <input type="number" id="weight" name="weight" class="textbox js-weight" min="1" max="600" step="0.1" aria-describedby="weightError" placeholder="Contoh: 60.5"> <span class="years">dalam Kg</span> </div> <span id="weightError" class="error hidden">Sila masukkan berat yang sah.</span> </div>
+                <div class="button-sec"> <button type="submit" class="js-btnCal" disabled>Kira BMI</button> </div>
+            </form>
+            <div class="right-sec">
+                <div class="result-main" aria-live="polite"> <div class="result-sec"> <div class="result-bmi">BMI Anda</div> <div class="result-val js-bmi_txt"> <div class="back-clr-no">--</div> </div> </div> <div class="band-sec"> <div class="color-band"> <div class="yellow"></div> <div class="green"></div> <div class="orange"></div> <div class="red"></div> <div class="marker js-bmi-marker"></div> </div> <div class="color-band text-band"> <div>Kurang</div> <div>Normal</div> <div>Berlebihan</div> <div>Obesiti</div> </div> </div> <div class="resultInfo-sec js-resultDesc hidden"> <div class="resultInfo-txt"> <div class="resultInfo-head js-resultHead"></div> <div class="resultInfo-body js-resultBody"></div> </div> </div> </div> <div class="bmi-range"> Julat BMI sihat: 18.5 kg/m<sup>2</sup> - 24.9 kg/m<sup>2</sup> </div>
+            </div>
+        </div>
+    </div>
+    <div class="container notes-section">
+        <h2 class="notes-title">Catatan Peribadi (Rekod BMI):</h2>
+        <textarea id="personalNotes" class="ruled-textarea" rows="5" placeholder="Tulis catatan anda di sini..."></textarea>
+        <div class="save-note-button-container">
+            <button id="saveNoteButton" style="display: none;">Simpan Catatan</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="./firebase-config.js"></script>
+<script type="module" src="./firestore.js"></script> <script type="module" src="./messaging.js"></script>
+<script type="module">
+    import { auth } from './firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { saveOrUpdateNote } from './firestore.js'; // Fungsi ini sekarang diimport
+
+    const logoutButton = document.getElementById('logoutButton');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    const personalNotesTextarea = document.getElementById('personalNotes');
+    const saveNoteButton = document.getElementById('saveNoteButton');
+    const bmiForm = document.getElementById('bmiForm');
+    const bmiResultTextElement = document.querySelector('.js-bmi_txt .back-clr-no'); // Digunakan untuk ambil nilai BMI semasa
+    const resultHeadElement = document.querySelector('.js-resultHead'); // Digunakan untuk ambil kategori semasa
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            if (userNameDisplay) userNameDisplay.textContent = `Helo, ${user.displayName || user.email}!`;
+            if (logoutButton) logoutButton.style.display = 'inline-block';
+            if (personalNotesTextarea) personalNotesTextarea.disabled = false;
+            if (saveNoteButton) saveNoteButton.style.display = 'inline-block';
+        } else {
+            window.location.href = 'loginSignup.html';
+        }
+    });
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'loginSignup.html';
+            }).catch((error) => {
+                alert('Logout failed: ' + error.message);
+            });
+        });
+    }
+
+    if (saveNoteButton) {
+        saveNoteButton.addEventListener('click', async () => {
+            console.log("DEBUG: Butang 'Simpan Catatan' diklik.");
+
+            const notesText = personalNotesTextarea.value;
+            const bmiValue = bmiResultTextElement ? bmiResultTextElement.textContent : null;
+            const bmiCategory = resultHeadElement ? resultHeadElement.textContent : null;
+
+            if (notesText.trim() !== "" || (bmiValue && bmiValue !== '--')) {
+                console.log("DEBUG: Memanggil saveOrUpdateNote dari butang simpan manual.");
+                const simpanBerjaya = await saveOrUpdateNote(notesText, (bmiValue !== '--' ? bmiValue : null), bmiCategory);
+                console.log("DEBUG: Status simpanBerjaya (manual):", simpanBerjaya);
+
+                if (simpanBerjaya === true) { // Semak dengan ketat === true
+                    alert("Catatan berjaya disimpan!"); // Notifikasi dipaparkan di sini
+                }
+                // Jika simpanBerjaya adalah false, alert ralat sudah sepatutnya dipaparkan oleh saveOrUpdateNote
+                // atau tiada apa untuk disimpan (juga return false dari saveOrUpdateNote).
+            } else {
+                alert("Tiada apa-apa untuk disimpan. Sila tulis catatan atau kira BMI anda dahulu.");
+            }
+        });
+    }
+
+    // Logik Kalkulator BMI (kod asal anda dikekalkan sepenuhnya)
+    document.addEventListener('DOMContentLoaded', function() {
+        const bmiFormLocal = document.getElementById('bmiForm');
+        const ageInput = document.getElementById('age');
+        const heightFtInput = document.getElementById('height_ft');
+        const heightInInput = document.getElementById('height_in');
+        const heightCmInput = document.getElementById('height_cm');
+        const weightInput = document.getElementById('weight');
+        const calculateBtn = document.querySelector('.js-btnCal');
+        const heightFtInBlock = document.querySelector('.js-height-ft-in');
+        const heightCmBlock = document.querySelector('.js-height-cm');
+        const heightSwitches = document.querySelectorAll('.js-height-switch');
+        const resultDescSection = document.querySelector('.js-resultDesc');
+        const resultBody = document.querySelector('.js-resultBody');
+        const bmiMarker = document.querySelector('.js-bmi-marker');
+        const inputsToValidate = [ageInput, heightFtInput, heightInInput, weightInput];
+
+        function validateForm() {
+            let formCompletelyValid = true;
+            const ageError = document.getElementById('ageError');
+            const ageVal = parseInt(ageInput.value);
+            if (!ageInput.value || isNaN(ageVal) || ageVal < 2 || ageVal > 120) { ageError.classList.remove('hidden'); formCompletelyValid = false; } else { ageError.classList.add('hidden'); }
+            const heightError = document.getElementById('heightError');
+            const isCmHidden = heightCmBlock.classList.contains('hidden');
+            let heightFieldValid = false;
+            if (isCmHidden) {
+                const ftValue = parseInt(heightFtInput.value); const inValue = parseInt(heightInInput.value);
+                const ftHasValue = heightFtInput.value.trim() !== ""; const inHasValue = heightInInput.value.trim() !== "";
+                if (!ftHasValue && !inHasValue) { heightFieldValid = false; }
+                else { let ftValid = !ftHasValue || (!isNaN(ftValue) && ftValue >= 1 && ftValue <= 8); let inValid = !inHasValue || (!isNaN(inValue) && inValue >= 0 && inValue <= 11); heightFieldValid = ftValid && inValid; }
+                if (!heightFtInput.value && !heightInInput.value) { heightFieldValid = false; }
+            } else {
+                const cmValue = parseInt(heightCmInput.value);
+                if (heightCmInput.value.trim() !== "" && !isNaN(cmValue) && cmValue >= 50 && cmValue <= 250) { heightFieldValid = true; } else { heightFieldValid = false; }
+            }
+            heightError.classList.toggle('hidden', heightFieldValid); // Tunjukkan error jika TIDAK valid
+            if (!heightFieldValid) formCompletelyValid = false;
+            const weightError = document.getElementById('weightError');
+            const weightValue = parseFloat(weightInput.value);
+            if (!weightInput.value || isNaN(weightValue) || weightValue < 1 || weightValue > 600) { weightError.classList.remove('hidden'); formCompletelyValid = false; } else { weightError.classList.add('hidden'); }
+            if(calculateBtn) calculateBtn.disabled = !formCompletelyValid;
+        }
+
+        inputsToValidate.forEach(input => { if (input) input.addEventListener('input', validateForm); });
+        if(heightCmInput) heightCmInput.addEventListener('input', validateForm);
+        heightSwitches.forEach(btn => {
+            btn.addEventListener('click', () => {
+                heightFtInBlock.classList.toggle('hidden'); heightCmBlock.classList.toggle('hidden');
+                if (!heightFtInBlock.classList.contains('hidden')) { if(heightCmInput) heightCmInput.value = ''; }
+                else { if(heightFtInput) heightFtInput.value = ''; if(heightInInput) heightInInput.value = ''; }
+                validateForm();
+            });
+        });
+
+        if (bmiFormLocal) {
+            bmiFormLocal.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                if (calculateBtn && calculateBtn.disabled) return;
+                let heightInMeters;
+                const weightInKg = parseFloat(weightInput.value); // Pastikan weightInput dirujuk dengan betul
+                if (!heightCmBlock.classList.contains('hidden')) { heightInMeters = parseFloat(heightCmInput.value) / 100; }
+                else { const feet = parseFloat(heightFtInput.value) || 0; const inches = parseFloat(heightInInput.value) || 0; heightInMeters = ((feet * 12) + inches) * 0.0254; }
+
+                if (heightInMeters > 0 && weightInKg > 0) {
+                    const bmi = weightInKg / (heightInMeters * heightInMeters);
+                    const bmiFixed = bmi.toFixed(1); // Ini string
+                    displayBMIResult(parseFloat(bmiFixed)); // Hantar sebagai nombor
+
+                    const notesText = personalNotesTextarea.value;
+                    const currentCategory = resultHeadElement.textContent; // Ambil kategori selepas displayBMIResult
+                    const autoNotePrefix = `Rekod pada ${new Date().toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' })} ${new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute:'2-digit'})}:\nBMI: ${bmiFixed}, Kategori: ${currentCategory}\n---\n`;
+                    if (!notesText.startsWith("Rekod pada")) { personalNotesTextarea.value = autoNotePrefix + notesText; }
+
+                    const simpanAutoBerjaya = await saveOrUpdateNote(personalNotesTextarea.value, bmiFixed, currentCategory);
+                    if(simpanAutoBerjaya) { console.log("DEBUG: Nota autosave selepas kira BMI:", simpanAutoBerjaya); }
+                }
+            });
+        }
+
+        function displayBMIResult(bmiValueFloat) {
+            if (!bmiResultTextElement || !resultHeadElement || !resultBody || !resultDescSection || !bmiMarker) { console.error("Elemen paparan BMI tidak ditemui."); return; }
+            const bmiValueString = bmiValueFloat.toFixed(1);
+            bmiResultTextElement.textContent = bmiValueString;
+            let category = '', description = '', markerPosition = 0;
+            if (bmiValueFloat < 18.5) { category = "Kurang Berat Badan"; description = "Anda mungkin kurang berat badan..."; markerPosition = (bmiValueFloat / 18.5) * 20; markerPosition = Math.min(Math.max(markerPosition, 2), 18); }
+            else if (bmiValueFloat <= 24.9) { category = "Berat Badan Normal"; description = "ANDA DALAM KEADAAN YANG BAIK!..."; markerPosition = 20 + ((bmiValueFloat - 18.5) / (24.9 - 18.5)) * 40; markerPosition = Math.min(Math.max(markerPosition, 22), 58); }
+            else if (bmiValueFloat <= 29.9) { category = "Berat Badan Berlebihan"; description = "Anda mungkin mempunyai berat badan berlebihan..."; markerPosition = 60 + ((bmiValueFloat - 25) / (29.9 - 25)) * 20; markerPosition = Math.min(Math.max(markerPosition, 62), 78); }
+            else { category = "Obesiti"; description = "Anda mungkin berada dalam julat obesiti..."; const upperObesityLimit = 40; markerPosition = 80 + Math.min(1, (bmiValueFloat - 30) / (upperObesityLimit - 30)) * 20; markerPosition = Math.min(Math.max(markerPosition, 82), 98); }
+            resultHeadElement.textContent = category; resultBody.textContent = description; // Pastikan resultHeadElement dikemas kini di sini
+            resultDescSection.classList.remove('hidden');
+            if (bmiMarker) bmiMarker.style.left = `${Math.max(0, Math.min(100, markerPosition))}%`;
+        }
+        if(calculateBtn) validateForm();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login & Signup - Aplikasi BMI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    html, body {
+      height: 100%; width: 100%;
+      display: flex; flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: url('wallpaper.jpg') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+      padding: 15px; /* Tambah padding untuk skrin kecil */
+    }
+
+    .page-title {
+      font-size: 28px; /* Saiz disesuaikan sedikit */
+      color: #fff;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+      margin-bottom: 40px; /* Kurangkan margin sedikit */
+      margin-top: 20px;
+    }
+
+    .wrapper {
+      width: 100%; /* Lebar penuh pada skrin kecil */
+      max-width: 390px; /* Lebar maksimum dikekalkan */
+      background: #fff; padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 15px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .title-text {
+      display: flex; width: 200%; /* Setiap borang 50%, jadi total 100% untuk kontena dalam */
+      font-size: 26px; /* Saiz disesuaikan sedikit */
+      font-weight: 600;
+      /* transition: margin-left 0.6s cubic-bezier(0.68,-0.55,0.265,1.55); */ /* Dibuang kerana JS mengawal ini */
+    }
+
+    .title-text .title { width: 50%; text-align: center; } /* Pastikan ini width: 50% */
+
+
+    .slide-controls {
+      display: flex; position: relative;
+      height: 50px; width: 100%; margin: 30px 0 10px;
+      border: 1px solid lightgrey; border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .slide {
+      width: 50%; /* Setiap tab 50% */
+      text-align: center;
+      line-height: 48px; font-size: 18px; font-weight: 500;
+      cursor: pointer; z-index: 1;
+      transition: color 0.3s ease;
+      user-select: none; /* Elak teks dipilih */
+    }
+
+    .slider-tab {
+      position: absolute; height: 100%; width: 50%; /* Lebar slider tab 50% */
+      background: linear-gradient(to right,#003366,#004080,#0059b3,#0073e6);
+      border-radius: 15px; left: 0; z-index: 0;
+      transition: left 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+    }
+
+    input[type="radio"] { display: none; }
+
+    #signup:checked ~ .slider-tab { left: 50%; }
+    #login:checked ~ .slider-tab { left: 0%; } /* Tambah ini untuk pastikan ia kembali */
+
+
+    #signup:checked ~ label.signup,
+    #login:checked ~ label.login {
+      color: #fff; cursor: default;
+    }
+
+    #signup:checked ~ label.login,
+    #login:checked ~ label.signup {
+      color: #000;
+    }
+
+    .form-container { width: 100%; overflow: hidden; }
+
+    .form-inner {
+      display: flex; width: 200%; /* Total lebar untuk kedua-dua borang */
+      /* transition: margin-left 0.6s cubic-bezier(0.68,-0.55,0.265,1.55); */ /* Dibuang kerana JS mengawal ini */
+    }
+
+    form { width: 50%; padding: 0 10px; } /* Setiap borang ambil 50% dari .form-inner */
+
+
+    .field {
+      height: 50px; width: 100%; margin-top: 20px;
+    }
+
+    .field input {
+      width: 100%; height: 100%;
+      border: 1px solid lightgrey;
+      border-radius: 15px;
+      padding-left: 15px;
+      font-size: 17px;
+      border-bottom-width: 2px;
+      outline: none;
+      transition: border-color 0.3s; /* Hanya transisi border-color */
+    }
+
+    .field input:focus { border-color: #1a75ff; }
+    .field input::placeholder { color: #999; }
+
+    .pass-link, .signup-link {
+      margin-top: 10px; text-align: center;
+    }
+
+    .pass-link a, .signup-link a {
+      color: #1a75ff; text-decoration: none;
+    }
+
+    .pass-link a:hover, .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    .btn { /* Ini adalah field yang mengandungi butang */
+      height: 50px; width: 100%;
+      border-radius: 15px; position: relative;
+      overflow: hidden;
+      margin-top: 20px; /* Pastikan ada margin atas */
+    }
+
+    .btn-layer {
+      position: absolute; height: 100%; width: 300%;
+      left: -100%;
+      background: linear-gradient(to right,#003366,#004080,#0059b3,#0073e6);
+      border-radius: 15px;
+      transition: left 0.4s ease;
+    }
+
+    .btn:hover .btn-layer {
+      left: 0;
+    }
+
+    .btn input[type="submit"] {
+      height: 100%; width: 100%;
+      background: none; border: none;
+      color: #fff; font-size: 20px;
+      font-weight: 500; /* Tambah ketebalan fon */
+      position: relative; z-index: 1;
+      cursor: pointer;
+      padding: 0; /* Reset padding untuk input submit */
+    }
+
+    .message-area {
+      margin-top: 15px;
+      margin-bottom: -10px; /* Kurangkan ruang di bawah jika mesej kosong */
+      min-height: 20px; /* Pastikan ada ruang walaupun tiada mesej */
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      width: 100%;
+      max-width: 390px; /* Selaraskan dengan .wrapper */
+      padding: 5px;
+    }
+    .message-area.success { color: green; }
+    .message-area.error { color: red; }
+
+  </style>
+</head>
+<body>
+
+  <h1 class="page-title">Selamat Datang ke Aplikasi Kalkulator BMI</h1>
+
+  <div class="wrapper">
+    <div class="title-text">
+      <div class="title login">Borang Log Masuk</div>
+      <div class="title signup">Borang Daftar</div>
+    </div>
+
+    <div class="form-container">
+      <div class="slide-controls">
+        <input type="radio" name="slide" id="login" checked>
+        <input type="radio" name="slide" id="signup">
+        <label for="login" class="slide login">Log Masuk</label>
+        <label for="signup" class="slide signup">Daftar</label>
+        <div class="slider-tab"></div>
+      </div>
+
+      <div class="form-inner">
+        <form id="login-form" class="login">
+          <div class="field">
+            <input type="email" id="loginEmail" placeholder="Alamat E-mel" required autocomplete="email">
+          </div>
+          <div class="field">
+            <input type="password" id="loginPassword" placeholder="Kata Laluan" required autocomplete="current-password">
+          </div>
+          <div class="pass-link">
+            <a href="#" id="forgotPasswordLink">Lupa kata laluan?</a>
+          </div>
+          <div class="field btn">
+            <div class="btn-layer"></div>
+            <input type="submit" value="Log Masuk">
+          </div>
+          <div class="signup-link">Belum jadi ahli? <a href="#" id="switchToSignupLink">Daftar sekarang</a></div>
+        </form>
+
+        <form id="signup-form" class="signup">
+          <div class="field">
+            <input type="text" id="firstName" placeholder="Nama Pertama" required autocomplete="given-name">
+          </div>
+          <div class="field">
+            <input type="text" id="lastName" placeholder="Nama Akhir" required autocomplete="family-name">
+          </div>
+          <div class="field">
+            <input type="email" id="signupEmail" placeholder="Alamat E-mel" required autocomplete="email">
+          </div>
+          <div class="field">
+            <input type="password" id="signupPassword" placeholder="Kata Laluan (min. 6 aksara)" required autocomplete="new-password">
+          </div>
+          <div class="field btn">
+            <div class="btn-layer"></div>
+            <input type="submit" value="Daftar">
+          </div>
+           <div class="signup-link">Sudah jadi ahli? <a href="#" id="switchToLoginLink">Log masuk di sini</a></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="message-area" id="message-area"></div>
+
+  <script type="module" src="./firebase-config.js"></script> <script type="module" src="./auth.js"></script>
+  <script>
+    const loginText = document.querySelector(".title-text .login");
+    const signupText = document.querySelector(".title-text .signup");
+    const formInner = document.querySelector(".form-inner");
+    const loginRadio = document.getElementById("login");
+    const signupRadio = document.getElementById("signup");
+    const switchToSignupLink = document.getElementById("switchToSignupLink");
+    const switchToLoginLink = document.getElementById("switchToLoginLink");
+    const titleTextContainer = document.querySelector(".title-text"); // Rujukan ke kontena title-text
+
+    // Fungsi untuk menukar borang
+    function showSignupForm() {
+        formInner.style.marginLeft = "-100%";
+        titleTextContainer.style.marginLeft = "-100%"; // Gerakkan kontena title-text
+        signupRadio.checked = true; // Pastikan radio button yang betul dipilih
+    }
+
+    function showLoginForm() {
+        formInner.style.marginLeft = "0%";
+        titleTextContainer.style.marginLeft = "0%"; // Gerakkan kontena title-text
+        loginRadio.checked = true; // Pastikan radio button yang betul dipilih
+    }
+
+    // Event listener untuk label radio
+    const loginLabel = document.querySelector("label.login[for='login']");
+    const signupLabel = document.querySelector("label.signup[for='signup']");
+
+    if(loginLabel) loginLabel.onclick = showLoginForm;
+    if(signupLabel) signupLabel.onclick = showSignupForm;
+
+    // Event listener untuk pautan
+    if(switchToSignupLink) {
+        switchToSignupLink.onclick = (e) => {
+            e.preventDefault();
+            showSignupForm();
+        };
+    }
+    if(switchToLoginLink) {
+        switchToLoginLink.onclick = (e) => {
+            e.preventDefault();
+            showLoginForm();
+        };
+    }
+
+    // Pastikan borang log masuk dipaparkan secara lalai semasa muat
+    document.addEventListener('DOMContentLoaded', () => {
+        showLoginForm(); // Panggil ini untuk set keadaan awal
+    });
+
+  </script>
+
+</body>
+</html>
